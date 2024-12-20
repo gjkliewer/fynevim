@@ -9,7 +9,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/widget"
 
 	"github.com/neovim/go-client/nvim"
 
@@ -19,8 +18,6 @@ import (
 const defaultWinWidth = 1000
 const defaultWinHeight = 800
 
-var editor *fynevim.Editor
-var richText *widget.RichText
 var log *slog.Logger
 
 func main() {
@@ -57,7 +54,7 @@ func startApp() {
 
 	dir := os.Getenv("PWD")
 
-	editor = fynevim.NewEditor(
+	editor := fynevim.NewEditor(
 		log,
 		[]nvim.ChildProcessOption{
 			nvim.ChildProcessCommand("nvim"), // nvim must be in PATH
@@ -71,6 +68,7 @@ func startApp() {
 
 	window.SetContent(editor)
 	log.Debug("starting window")
+	window.Canvas().Focus(editor)
 	window.ShowAndRun()
 }
 
