@@ -6,13 +6,14 @@ run:
 
 clean:
 	rm -rf .tmp
-	rm -rf FyneVim.app
+	rm -rf neovim.app
 
 package: clean
 	go run fyne.io/fyne/v2/cmd/fyne package
-	codesign --force --deep --sign - FyneVim.app # ad-hoc signature
+	codesign --force --deep --sign - neovim.app # ad-hoc signature
 	# cp foo.provisionProfile NeoNV.app/Contents
 	# mv NeoNV.app .tmp
 
 install:
+	go get ./...
 	go run fyne.io/fyne/v2/cmd/fyne install

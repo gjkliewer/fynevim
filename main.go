@@ -1,8 +1,11 @@
 package main
 
 import (
+	"flag"
 	"log/slog"
 	"os"
+	"os/exec"
+	"fmt"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -21,8 +24,27 @@ var richText *widget.RichText
 var log *slog.Logger
 
 func main() {
-	log = initLogger()
+	forkFlag := flag.Bool("fork", false, "Spawn a child process")
+	flag.Parse()
 
+	if *forkFlag {
+		// Create a command that will execute the current program
+		cmd := exec.Command(os.Args[0])
+
+		// Inherit the current process's environment variables
+		cmd.Env = os.Environ()
+
+		// Start the child process
+		if err := cmd.Start(); err != nil {
+			panic(fmt.Sprintf("Error forking: %v", err))
+		}
+	} else {
+		startApp()
+	}
+}
+
+func startApp() {
+	log = initLogger()
 	a := app.New()
 	window := a.NewWindow("Neovim")
 	window.SetPadded(false)
@@ -30,15 +52,13 @@ func main() {
 
 	dir, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error getting working directory: %v", err))
 	}
 
 	editor = fynevim.NewEditor(
 		log,
 		[]nvim.ChildProcessOption{
-			// TODO Did this because can't find command 'nvim' when started from macos Finder,
-			//      need to make this work for more than just nvim homebrew install
-			nvim.ChildProcessCommand("/opt/homebrew/bin/nvim"),
+			nvim.ChildProcessCommand("nvim"), // nvim must be in PATH
 			nvim.ChildProcessArgs(
 				"--embed",
 			),
