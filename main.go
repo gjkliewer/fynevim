@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
-	"fmt"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -30,6 +30,11 @@ func main() {
 	if *forkFlag {
 		// Create a command that will execute the current program
 		cmd := exec.Command(os.Args[0])
+		dir, err := os.Getwd()
+		if err != nil {
+			panic(fmt.Sprintf("Error getting working directory: %v", err))
+		}
+		cmd.Dir = dir
 
 		// Inherit the current process's environment variables
 		cmd.Env = os.Environ()
@@ -50,10 +55,7 @@ func startApp() {
 	window.SetPadded(false)
 	window.Resize(fyne.NewSize(defaultWinWidth, defaultWinHeight))
 
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(fmt.Sprintf("Error getting working directory: %v", err))
-	}
+	dir := os.Getenv("PWD")
 
 	editor = fynevim.NewEditor(
 		log,
