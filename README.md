@@ -9,7 +9,7 @@ Fynevim is both a [Fyne](https://fyne.io/) widget that can be included in other 
 
 ## Library usage
 Here's a minimal example of creating a text editor with fynevim:
-```
+```go
 package main
 
 import (
