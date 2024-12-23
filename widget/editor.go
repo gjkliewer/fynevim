@@ -482,7 +482,7 @@ func (e *Editor) handleNvimEvents(updates ...[]any) {
 					cell := Cell{}
 
 					t := cellData[0].(string)
-					cell.Text = rune(t[0])
+					cell.Text = []rune(t)[0]
 
 					if len(cellData) > 1 {
 						highlightID = toi(cellData[1])
