@@ -7,8 +7,9 @@ Fynevim is both a [Fyne](https://fyne.io/) widget that can be included in other 
 - The command `:Pre[view]` allows for rendered previews of markdown files. Press `<Esc>` to exit preview mode.
 
 ## Standalone editor installation
-1. Ensure go is installed
-2. Run `make install`
+1. Install neovim.
+2. Install go.
+2. Run `make install`.
 
 ## Library usage
 Here's a minimal example of embedding a fyenvim text editor in a fyne app:

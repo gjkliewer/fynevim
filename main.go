@@ -66,6 +66,20 @@ func startApp() {
 	)
 	defer editor.Nvim.Close()
 
+	cID := editor.Nvim.ChannelID()
+	err := editor.Nvim.Command(fmt.Sprintf("autocmd VimLeave * call rpcnotify(%v, 'fynevim.VimLeave')", cID))
+	if err != nil {
+		panic(fmt.Sprintf("Could set autocmd: %v", err))
+	}
+
+	err = editor.Nvim.RegisterHandler("fynevim.VimLeave", func() error {
+		window.Close()
+		return nil
+	})
+	if err != nil {
+		panic(fmt.Sprintf("Could not register handler: %v", err))
+	}
+
 	window.SetContent(editor)
 	log.Debug("starting window")
 	window.Canvas().Focus(editor)
