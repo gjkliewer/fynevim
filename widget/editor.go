@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
@@ -46,7 +47,9 @@ type Editor struct {
 	cursor          cursor
 	markdownPreview *widget.RichText
 
+	// state
 	previewMode bool
+	controlHeld bool
 
 	// nvim ui-linegrid events
 	gridCursorGoto    *GridCursorGoto
@@ -81,6 +84,37 @@ func (e *Editor) FocusLost() {
 	// e.debug("focus lost")
 }
 
+func (e *Editor) KeyDown(fke *fyne.KeyEvent) {
+	if e.controlHeld {
+		input := fmt.Sprintf("<C-%s>", fke.Name)
+		_, err := e.Nvim.Input(input)
+		if err != nil {
+			e.debug("error in nvim.Input", "error", err)
+		}
+		return
+	}
+
+	switch fke.Name {
+	case desktop.KeyControlLeft, desktop.KeyControlRight:
+		e.controlHeld = true
+		e.debug("control down")
+	default:
+		e.debug("unhandled key down, ignoring")
+		return
+	}
+}
+
+func (e *Editor) KeyUp(fke *fyne.KeyEvent) {
+	switch fke.Name {
+	case desktop.KeyControlLeft, desktop.KeyControlRight:
+		e.controlHeld = false
+		e.debug("control up")
+	default:
+		e.debug("unhandled key up, ignoring")
+		return
+	}
+}
+
 // handle normal key input
 // Focusable interface
 func (e *Editor) TypedRune(r rune) {
@@ -89,10 +123,13 @@ func (e *Editor) TypedRune(r rune) {
 	}
 
 	input := string(r)
-	e.debug("received typed rune input", "rune", input)
+
 	if input == "<" {
 		input = "<LT>"
 	}
+
+	e.debug("received typed rune input", "rune", input)
+
 	_, err := e.Nvim.Input(input)
 	if err != nil {
 		e.debug("error in nvim.Input", "error", err)
@@ -191,7 +228,7 @@ func (r *renderer) MinSize() fyne.Size {
 }
 
 func (r *renderer) Refresh() {
-	// r.e.content.Refresh()
+	r.e.content.Refresh() // this is needed to redraw screen when a new line is added or removed
 	r.e.drawCursor()
 }
 

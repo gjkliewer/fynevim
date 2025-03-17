@@ -41,3 +41,9 @@ func main() {
 	window.ShowAndRun()
 }
 ```
+
+## TODO
+### Features
+
+### Bugs
+- fynevim fails to start if passed file has a swap file
