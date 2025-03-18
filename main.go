@@ -25,8 +25,11 @@ func main() {
 	flag.Parse()
 
 	if *forkFlag {
+		program := os.Args[0]
+		args := filterForkFlag(os.Args[1:])
+
 		// Create a command that will execute the current program
-		cmd := exec.Command(os.Args[0], os.Args[1:]...)
+		cmd := exec.Command(program, args...)
 		dir, err := os.Getwd()
 		if err != nil {
 			panic(fmt.Sprintf("Error getting working directory: %v", err))
@@ -102,4 +105,15 @@ func initLogger() *slog.Logger {
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel})
 	l := slog.New(h)
 	return l
+}
+
+func filterForkFlag(args []string) []string {
+	n := 0
+	for _, x := range args {
+		if x != "-fork" {
+			args[n] = x
+			n++
+		}
+	}
+	return args[:n]
 }
