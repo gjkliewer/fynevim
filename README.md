@@ -44,6 +44,8 @@ func main() {
 
 ## TODO
 ### Features
+- image preview
 
 ### Bugs
+- vertical splits have scrolling issues
 - fynevim fails to start if passed file has a swap file

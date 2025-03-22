@@ -16,4 +16,5 @@ package: clean
 
 install:
 	go get ./...
+	rm -rf /Applications/fynevim.app
 	go run fyne.io/fyne/v2/cmd/fyne install
